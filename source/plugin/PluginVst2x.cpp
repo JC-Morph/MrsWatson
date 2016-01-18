@@ -46,7 +46,6 @@ extern "C" {
 
     extern LinkedList getVst2xPluginLocations(CharString currentDirectory);
     extern LibraryHandle getLibraryHandleForPlugin(const CharString pluginAbsolutePath);
-    extern void showVst2xEditor(AEffect *effect, const CharString pluginName, PluginWindowSize *rect);
     extern AEffect *loadVst2xPlugin(LibraryHandle libraryHandle);
     extern void closeLibraryHandle(LibraryHandle libraryHandle);
 }
@@ -875,23 +874,6 @@ extern "C" {
         }
     }
 
-    static void _showVst2xEditor(void *pluginPtr)
-    {
-        Plugin plugin = (Plugin) pluginPtr;
-        PluginVst2xData data = (PluginVst2xData) (plugin->extraData);
-        PluginWindowSize windowSize;
-
-        if ((data->pluginHandle->flags & effFlagsHasEditor) != 0) {
-            logDebug("Attempting to open editor for plugin '%s'", plugin->pluginName->data);
-
-            if (_pluginVst2xGetWindowRect(plugin, &windowSize)) {
-                showVst2xEditor(data->pluginHandle, plugin->pluginName, &windowSize);
-            }
-        } else {
-            logError("Plugin '%s' does not have a GUI editor", plugin->pluginName->data);
-        }
-    }
-
     static void _closeVst2xPlugin(void *pluginPtr)
     {
         Plugin plugin = (Plugin)pluginPtr;
@@ -931,7 +913,6 @@ extern "C" {
         plugin->processMidiEvents = _processMidiEventsVst2xPlugin;
         plugin->setParameter = _setParameterVst2xPlugin;
         plugin->prepareForProcessing = _prepareForProcessingVst2xPlugin;
-        plugin->showEditor = _showVst2xEditor;
         plugin->closePlugin = _closeVst2xPlugin;
         plugin->freePluginData = _freeVst2xPluginData;
 
